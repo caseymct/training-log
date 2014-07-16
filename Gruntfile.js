@@ -3,6 +3,7 @@
 var LIVERELOAD_PORT = 35729;
 var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
 var mountFolder = function (connect, dir) {
+    console.log(dir);
     return connect.static(require('path').resolve(dir));
 };
 
@@ -26,31 +27,140 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         yeoman: yeomanConfig,
-        watch: {
-            emberTemplates: {
-                files: '<%= yeoman.app %>/templates/**/*.hbs',
-                tasks: ['emberTemplates']
+
+        // Reads the projects .htmlhintrc file and applies coding standards.
+        htmlhint: {
+            options: {
+                htmlhintrc: ".htmlhintrc"
             },
-            compass: {
-                files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass,css}'],
-                tasks: ['compass:server']
+            src: ["app/templates/**/*.hbs", "app/app.html.tpl"]
+        },
+
+        /*
+            Finds Handlebars templates and precompiles them into functions.
+            The provides two benefits:
+
+            1. Templates render much faster
+            2. We only need to include the handlebars-runtime microlib
+                and not the entire Handlebars parser.
+
+            Files will be written out to dependencies/compiled/templates.js
+            which is required within the project files so will end up
+            as part of our application.
+
+            The compiled result will be stored in
+            Ember.TEMPLATES keyed on their file path (with the "app/templates" stripped)
+        */
+        emberTemplates: {
+            options: {
+                templateName: function (sourceFile) {
+                    return sourceFile.replace(/app\/templates\//, "");
+                }
             },
-            neuter: {
-                files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-                tasks: ['neuter']
-            },
-            livereload: {
-                options: {
-                    livereload: LIVERELOAD_PORT
-                },
-                files: [
-                    '.tmp/scripts/*.js',
-                    '<%= yeoman.app %>/*.html',
-                    '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
-                    '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-                ]
+            // dist: {
+            //     files: {
+            //         '.tmp/scripts/compiled-templates.js': '<%= yeoman.app %>/templates/**/*.hbs'
+            //     }
+            // },
+            all: {
+                files: {
+                    "dependencies/compiled/templates.js": [
+                        "app/templates/**/*.hbs",
+                    ]
+                }
             }
         },
+
+        /*
+            A simple ordered concatenation strategy.
+            This will start at app/app.js and begin adding dependencies in the correct order
+            writing their string contents into "build/application.js"
+
+            Additionally it will wrap them in evals with @ sourceURL statements so errors, log
+            statements and debugging will reference the source files by line number.
+
+            You would set this option to false for production.
+        */
+        neuter: {
+            debug: {
+                options: {
+                    includeSourceURL: true
+                },
+                files: { "training-log.js": ["app/app.js", "app/instruments/debug.js"] }
+            },
+            dist: {
+                options: {
+                    includeSourceURL: false
+                },
+                files: { "training-log.js": ["app/app.js"] }
+            },
+            app: {
+                options: {
+                    includeSourceURL: false,
+                    filepathTransform: function (filepath) {
+                        return yeomanConfig.app + '/' + filepath;
+                    }
+                },
+                files: { "training-log.js": ["app/app.js"] },
+                src: "app/app.js",
+                dest: "training-log.js"
+            }
+        },
+
+        /*
+            Reads the projects .jshintrc file and applies coding
+            standards. Doesn't lint the dependencies or test support files.
+        */
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc',
+                reporter: require('jshint-stylish')
+            },
+            files: {
+                src: [
+                    "Gruntfile.js",
+                    "app/**/*.js",
+                    "!dependencies/**/*.*",
+                    "!test/support/*.*"
+                ]
+            },
+            all: [
+                'Gruntfile.js',
+                'app/{,*/}*.js',
+                '!<%= yeoman.app %>/scripts/vendor/*',
+                'test/spec/{,*/}*.js'
+            ]
+        },
+
+        // Compile all LESS files into a large CSS file.
+        less: {
+            debug: {
+                options: {
+                    paths: ["app/styles"],
+                    strictImports: true
+                },
+                files: {
+                    "training-log.css": [
+                        "app/styles/{,*/}*.less",
+                        "app/styles/{,*/}*.css"
+                    ]
+                }
+            },
+            dist: {
+                options: {
+                    paths: ["app/styles"],
+                    strictImports: true,
+                    yuicompress: true
+                },
+                files: {
+                    "training-log.css": [
+                        "app/styles/*.less",
+                        "app/styles/*.css"
+                    ]
+                }
+            }
+        },
+
         connect: {
             options: {
                 port: 9000,
@@ -59,11 +169,12 @@ module.exports = function (grunt) {
             },
             livereload: {
                 options: {
+                    open: true,
                     middleware: function (connect) {
                         return [
                             lrSnippet,
-                            mountFolder(connect, '.tmp'),
-                            mountFolder(connect, yeomanConfig.app)
+                            connect.static(require('path').resolve('.')),
+                            connect.static(require('path').resolve('app'))
                         ];
                     }
                 }
@@ -106,18 +217,7 @@ module.exports = function (grunt) {
             },
             server: '.tmp'
         },
-        jshint: {
-            options: {
-                jshintrc: '.jshintrc',
-                reporter: require('jshint-stylish')
-            },
-            all: [
-                'Gruntfile.js',
-                '<%= yeoman.app %>/scripts/{,*/}*.js',
-                '!<%= yeoman.app %>/scripts/vendor/*',
-                'test/spec/{,*/}*.js'
-            ]
-        },
+
         mocha: {
             all: {
                 options: {
@@ -128,13 +228,13 @@ module.exports = function (grunt) {
         },
         compass: {
             options: {
-                sassDir: '<%= yeoman.app %>/styles',
-                cssDir: '.tmp/styles',
-                generatedImagesDir: '.tmp/images/generated',
-                imagesDir: '<%= yeoman.app %>/images',
-                javascriptsDir: '<%= yeoman.app %>/scripts',
-                fontsDir: '<%= yeoman.app %>/styles/fonts',
-                importPath: '<%= yeoman.app %>/bower_components',
+                // sassDir: '<%= yeoman.app %>/styles',
+                cssDir: 'app/styles',
+                generatedImagesDir: 'images/generated',
+                imagesDir: 'images',
+                javascriptsDir: 'app',
+                fontsDir: 'app/styles/fonts',
+                importPath: 'app/bower_components',
                 httpImagesPath: '/images',
                 httpGeneratedImagesPath: '/images/generated',
                 httpFontsPath: '/styles/fonts',
@@ -213,27 +313,75 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        // Copy and minify the main html file.
         htmlmin: {
+            debug: {
+                options: {
+                    removeComments: false,
+                    collapseWhitespace: false
+                },
+                files: {
+                    "index.html": "app/app.html.tpl"
+                }
+            },
             dist: {
                 options: {
-                    /*removeCommentsFromCDATA: true,
-                    // https://github.com/yeoman/grunt-usemin/issues/44
-                    //collapseWhitespace: true,
-                    collapseBooleanAttributes: true,
-                    removeAttributeQuotes: true,
-                    removeRedundantAttributes: true,
-                    useShortDoctype: true,
-                    removeEmptyAttributes: true,
-                    removeOptionalTags: true*/
+                    removeComments: true,
+                    collapseWhitespace: true
                 },
-                files: [{
-                    expand: true,
-                    cwd: '<%= yeoman.app %>',
-                    src: '*.html',
-                    dest: '<%= yeoman.dist %>'
-                }]
+                files: {
+                    "index.html": "app/app.html.tpl"
+                }
             }
         },
+
+        /*
+            Watch files for changes.
+
+            Changes in dependencies/ember.js or application javascript will trigger the neuter task.
+            Changes to any templates will trigger the emberTemplates task (which writes a new compiled
+            file into dependencies/) and then neuter all the files again.
+        */
+        watch: {
+            dependency_code: {
+                files: ["dependencies/scripts/*.js"],
+                tasks: ["neuter:debug"]
+            },
+            dependency_styles: {
+                files: ["dependencies/styles/**/*.less"],
+                tasks: ["less:debug"]
+            },
+            app_markup: {
+                files: ["app/app.html.tpl"],
+                tasks: ["htmlmin:debug"]
+            },
+            app_code: {
+                files: ["app/**/*.js"],
+                tasks: ["neuter:debug"]
+            },
+            app_styles: {
+                files: ["app/styles/**/*.less"],
+                tasks: ["less:debug"]
+            },
+            app_templates: {
+                files: "app/templates/**/*.hbs",
+                tasks: ["emberTemplates", "neuter:debug"]
+            },
+            livereload: {
+                options: {
+                    livereload: LIVERELOAD_PORT
+                },
+                files: [
+                    'app/*.js',
+                    'app/**/*.js',
+                    'app/*.html',
+                    '{app, app/styles/{,*/}*.css',
+                    'images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                ]
+            }
+        },
+
         replace: {
           app: {
             options: {
@@ -307,32 +455,21 @@ module.exports = function (grunt) {
                 'svgmin',
                 'htmlmin'
             ]
-        },
-        emberTemplates: {
-            options: {
-                templateName: function (sourceFile) {
-                    var templatePath = yeomanConfig.app + '/templates/';
-                    return sourceFile.replace(templatePath, '');
-                }
-            },
-            dist: {
-                files: {
-                    '.tmp/scripts/compiled-templates.js': '<%= yeoman.app %>/templates/**/*.hbs'
-                }
-            }
-        },
-        neuter: {
-            app: {
-                options: {
-                    filepathTransform: function (filepath) {
-                        return yeomanConfig.app + '/' + filepath;
-                    }
-                },
-                src: '<%= yeoman.app %>/scripts/app.js',
-                dest: '.tmp/scripts/combined-scripts.js'
-            }
         }
     });
+
+    grunt.loadNpmTasks("grunt-contrib-htmlmin");
+    grunt.loadNpmTasks("grunt-contrib-jshint");
+    grunt.loadNpmTasks("grunt-jscs-checker");
+    grunt.loadNpmTasks("grunt-contrib-less");
+    grunt.loadNpmTasks("grunt-contrib-qunit");
+    grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks("grunt-ember-templates");
+    grunt.loadNpmTasks("grunt-hashres");
+    grunt.loadNpmTasks("grunt-htmlhint");
+    grunt.loadNpmTasks("grunt-neuter");
+    grunt.loadNpmTasks("grunt-bump");
+    grunt.loadNpmTasks("grunt-shell-spawn");
 
     grunt.registerTask('server', function (target) {
         grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
@@ -355,6 +492,18 @@ module.exports = function (grunt) {
             'watch'
         ]);
     });
+
+    grunt.registerTask("rebuild", [
+        // "replace:app",
+        // "copy:fonts",
+        'concurrent:server',
+        "emberTemplates",
+        "neuter:debug",
+        "less:debug",
+        "htmlmin:debug",
+        "connect:livereload",
+        "watch"
+    ]);
 
     grunt.registerTask('test', [
         'clean:server',

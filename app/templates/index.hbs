@@ -1,3 +1,11 @@
-<div class="well">
-    Welcome to Yeoman and Ember.js!
+<div class="container" id="main">
+    <h3>no YOU shut up!</h3>
+    <div class="row">
+        <div>
+            <div class="col-md-3">
+                {{#link-to "logEntry.create" class="btn active"}}Enter a new day{{/link-to}}
+                {{#link-to "logEntries.view" class="btn active"}}See past entries{{/link-to}}
+            </div>
+        </div>
+    </div>
 </div>

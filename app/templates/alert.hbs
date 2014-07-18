@@ -1,0 +1,4 @@
+<div {{bind-attr class=":alert alertClass alertHidden:hidden"}}>
+    <button type="button" class="close" {{action "dismissAlert"}}>&times;</button>
+    <strong>{{alertTitle}}</strong> {{{alertDescription}}}
+</div>

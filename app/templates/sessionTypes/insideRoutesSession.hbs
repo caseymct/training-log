@@ -1,0 +1,46 @@
+<div id="inside-routes-session">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Set #</th>
+                <th>Details</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody class="sortable">
+            {{#each routeSet in routeSets}}
+                {{log routeSet}}
+                <tr>
+                    <td>{{add _view.contentIndex 1}}</td>
+                    <td>
+                        <div>
+                        {{#each route in routeSet.routes}}
+                            <div>
+                                <label>Grade</label>
+                                <span>5.</span>
+                                {{input type="text" value=route.grade class="route-grade"}}
+                                <label>Details</label>
+
+                                {{view Ember.Select
+                                    value=route.transition
+                                    content=route.transitionOptions
+                                    class="form-control"
+                                }}
+
+                                <label>Comments</label>
+                                {{input type="text" value=route.comments class="route-comments"}}
+                            </div>
+                        {{/each}}
+                        </div>
+                    </td>
+                    <td>del</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="form-group">
+        {{input class="btn btn-success" type="submit" value="Add New Set"}}
+        <button class="btn" {{action "discard" on="click"}}>Reset</button>
+    </div>
+</div>

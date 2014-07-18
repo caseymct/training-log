@@ -1,0 +1,319 @@
+@import "../../dependencies/styles/jquery.jsoneditor.less";
+@import "../../dependencies/styles/bootstrap-datepicker.less";
+@import "../../dependencies/styles/bootstrap-timepicker.less";
+@import "../../dependencies/styles/bootstrap.less";
+
+.navbar-inverse .nav li.dropdown.open>.dropdown-toggle, .navbar-inverse .nav
+li.dropdown.active>.dropdown-toggle, .navbar-inverse .nav
+li.dropdown.open.active>.dropdown-toggle,
+.navbar, .navbar-inverse .navbar-inner {
+    filter:none;
+    background-image: none;
+}
+#deactivate-modal .modal-body {
+  overflow: hidden;
+}
+
+@import "../../dependencies/styles/simplehelp.less";
+.navbar-overlay {position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: black; opacity: 0; display: none;}
+
+@body-text: #525261;
+@body-text-dark: #333A41;
+
+@white: #ffffff;
+@offwhite: #fefefe;
+@bodywhite: #fafafa;
+@white80: rgba(255,255,255,.8);
+@grey-border: #c0c0c0;
+@medium-grey:#CDCFD3;
+@mediumdark-grey: #666666;
+@dk-grey: #53555C;
+@section-border: #dddddd;
+@light-grey: #EDEDED;
+@bright-grey: #f4f4f4;
+@blue-grey: #BAC1C6;
+@blue-grey-dark: #838C96;
+@black5: rgba(0, 0, 0, 0.05);
+@black10: rgba(0,0,0,.1);
+@black20: rgba(0,0,0,.2);
+@black30: rgba(0,0,0,.3);
+@white30: rgba(255,255,255,.3);
+@black40: rgba(0,0,0,.4);
+@black50: rgba(0,0,0,.5);
+@white50: rgba(255,255,255,.5);
+
+@green: #72C039;
+@green-button: #21B54B;
+@blue: #199FD9;
+@red: #D5283D;
+@main-color: @blue-grey-dark;
+
+html, body {
+    margin: 30px 0;
+}
+
+.transition(@property:all; @duration:.5s; @timing:ease; @delay:0s;){
+  -webkit-transition: @property @duration @timing @delay;
+  -moz-transition: @property @duration @timing @delay;
+  -o-transition: @property @duration @timing @delay;
+  transition: @property @duration @timing @delay;
+}
+
+.box-shadow (@disth, @distv, @blur, @color){
+    -webkit-box-shadow: @disth @distv @blur @color;
+    -moz-box-shadow: @disth @distv @blur @color;
+    box-shadow: @disth @distv @blur @color;
+}
+.box-shadow-inset(@disth, @distv, @blur, @color){
+    -webkit-box-shadow: inset @disth @distv @blur @color;
+    -moz-box-shadow: inset @disth @distv @blur @color;
+    box-shadow: inset @disth @distv @blur @color;
+}
+
+.box-shadow-undo {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.default-shadow {
+  .box-shadow (0; 2px; 0; @black5);
+}
+
+.text-shadow-bottom(@color) {
+    -webkit-text-shadow: 0 1px 1px @color;
+    -moz-text-shadow: 0 1px 1px @color;
+    text-shadow: 0 1px 1px @color;
+}
+.text-shadow-top(@color) {
+    -webkit-text-shadow: 0 -1px 1px @color;
+    -moz-text-shadow: 0 -1px 1px @color;
+    text-shadow: 0 -1px 1px @color;
+}
+
+.border-radius (@px) {
+    -webkit-border-radius: @px;
+    -moz-border-radius: @px;
+    border-radius: @px;
+}
+
+.border-radius-bottom (@px){
+    -webkit-border-radius: 0 0 @px @px;
+    -moz-border-radius: 0 0 @px @px;
+    border-radius: 0 0 @px @px;
+}
+.column-count(@count) {
+  -webkit-column-count: @count;
+  -moz-column-count: @count;
+  column-count: @count;
+}
+.dat-padding {
+  padding: 1em;
+}
+
+.reset {padding: 0; margin: 0;}
+.clearfix() {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+.pull-left { float:left;}
+.pull-right { float:right;}
+
+footer {margin:.5em 1.5em 0 0;
+  .footer-links {list-style-type: none; text-align: right; .reset; float: right; .clearfix; display: block; width: 100%;}
+  .copy {.clearfix; font-size: 90%; display: block; clear: right; padding: .5em; text-align: right; width: 100%;}
+  a {color: @body-text;}
+}
+
+.btn {
+  background: #f8f8f8;
+  border: 1px solid #d9d9d9;
+  -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  -webkit-text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  -moz-text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  color: #525261;
+  -webkit-transition: color, background 0.5s ease 0;
+  -moz-transition: color, background 0.5s ease 0;
+  -o-transition: color, background 0.5s ease 0;
+  transition: color, background 0.5s ease 0;
+  padding: 10px;
+  display: block;
+  font-size: 16px;
+  border-radius: 5px;
+}
+.btn.active,
+.btn:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  color: #ffffff;
+  -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  background: #525261;
+  -webkit-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  -moz-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.btn:hover {
+  color: #656577;
+  background: #e7e7e7;
+}
+.btn:hover:active,
+.btn:hover.active {
+  background: #67677a;
+  color: #f4f4f4;
+  -webkit-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  -moz-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.btn:focus {
+  color: #525261;
+}
+.btn:focus.active {
+  color: #ffffff;
+}
+.btn.btn-success {
+  background: #72c039;
+  border: 1px solid #66ac33;
+  color: #ffffff;
+  -webkit-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+.btn.btn-success:hover {
+  background: #66ac33;
+  border: 1px solid #5fa130;
+}
+.btn.btn-success .glyphicon {
+  color: #fafafa;
+  -webkit-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+.btn.btn-delete {
+  background: #d5283d;
+  border: 1px solid #c02437;
+  color: #fafafa;
+  -webkit-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+.btn.btn-delete:hover {
+  background: #c02437;
+  border: 1px solid #b32233;
+}
+.btn.btn-delete .glyphicon {
+  color: #fafafa;
+  -webkit-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+.btn .caret {
+  border-top-color: #525261;
+}
+.btn-group {
+  background: #f8f8f8;
+}
+
+.main-window {
+  position: relative;
+  top: 50px;
+}
+
+.ember-text-field {
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+// Top Level Navigation
+#top-nav {height: 100px; background: @white; border-bottom:1px solid @section-border; .box-shadow (0; 2px; 3px; @black10;);
+  .navbar-brand {background: url(images/logos/simpleenergy.svg) no-repeat 0 0; text-indent: -9000px; background-size: 200px 50px; line-height: auto;
+    @media (max-width: 767px) and (min-width: 320px) {margin: 10px auto;}
+    @media (min-width: 768px) {width: 165px; background-size: 158px 50px; margin: 20px 0 0 10px;}
+    @media (min-width: 992px) {width: 300px;max-width: 300px;background-size: 300px 59px;margin: 20px 0 0 10px;height: 60px;}
+    @media (max-width: 1090px) and (min-width: 992px) {width: 275px; max-width: 275px; background-size: 275px}
+  }
+  &.navbar {
+    @media (max-width: 767px) and (min-width: 320px) {height: 69px; padding: 0;}
+    @media (max-width: 800px) {padding: 0;}
+  }
+  .navbar-nav {
+    @media (max-width: 767px) and (min-width: 320px) {margin: 0;}
+  }
+  .navbar-nav > li > a {border-top: 3px solid @white; padding: 38px 14px; cursor: pointer; background: @white;
+      @media (max-width: 1080px) {padding: 38px 8px;}
+      @media (max-width: 800px) {padding: 38px 10px;}
+      @media (max-width: 767px) and (min-width: 500px) { border-top: 0px; padding: 10px;}
+      @media (max-width: 767px) and (min-width: 320px) {border-top: 1px solid @section-border; .border-radius(0); padding: 1em;}
+      }
+  .navbar-nav > .selected > a, .navbar-nav > .selected > a:hover, .navbar-nav > .selected > a:focus {
+      border-top: 3px solid @main-color; color: @main-color;
+      @media (max-width: 767px) and (min-width: 500px) { border-top: 0px; .border-radius (0px);}
+      @media (max-width: 767px) and (min-width: 320px) {border-top: 0px; background: @main-color; color: @white;}
+      }
+  #responsive-nav  {
+      @media (max-width: 800px) and (min-width: 320px) {background: @white;  overflow: hidden; .border-radius (0 0 5px 5px); margin: 0px 0 0 0; .default-shadow;
+        .nav-collapse {border:1px solid @white; border-top: 0; .border-radius(0 0 5px 5px);
+          &.in {border: 1px solid @section-border;  border-top: 0;}
+        }
+      }
+  }
+  .navbar-text {.reset; border-left: 1px solid @section-border;
+    p {padding: 34px 20px; line-height: 27px; margin: 0;
+      @media (max-width: 1080px) {padding: 34px 10px;}
+    }
+    @media (max-width: 767px) and (min-width: 320px) {padding: 1em; border-left: none;}
+    @media (max-width: 1080px) {padding: 0; border-left: 1px solid @section-border;}
+  }
+}
+
+// Side Navigation
+#section-nav {padding-right: 0px; position: fixed; left: 0; height: 100%;
+  @media (max-width: 767px) {position: static;}
+    h4 {padding: .5em 0; margin: .5em 0 .5em .5em;
+      @media (max-width:1200px) {font-size: 130%;}
+    }
+    .nav-pills {border-bottom: 1px solid @section-border;
+      li {border-top: 1px solid darken(@bright-grey, 5);
+        a {padding: 15px 10px; margin-top: 0; .transition(background;.25s;ease;0s;); color: @body-text;
+          &:hover {}
+        }
+      }
+    }
+    .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {.border-radius(0px); background: @main-color; color: @white;}
+
+    .nav-pills > li + li {margin-left: 0px;}
+    // Remove padding on small screens on the right
+    &.col-lg-2, &.col-md-3, &.col-sm-12 {
+        @media (min-width: 768px) {padding-left: 0px;}
+        @media (min-width: 992px) {padding-left: 0px;}
+        @media (max-width: 480px) {padding-left: 0px; position: static;}
+    }
+}
+
+#app-content {background: @offwhite; border-left: 1px solid @grey-border; border-bottom: 1px solid @grey-border; padding-bottom: 1em; min-height: 500px;
+    @media (min-width: 768px){margin-left:25%;}
+    @media (min-width: 992px){margin-left:25%;}
+    @media (min-width:1200px){margin-left: 10%;}
+}
+
+// Inside routes
+#inside-routes-session { padding: 20px 20px; width: 92%;
+  label { padding: 2px 5px 2px 20px;}
+  .route-comments { width: 30%;}
+  .route-grade { width: 8%;}
+}
+
+select.form-control { display: inline-block; width: inherit;}
+

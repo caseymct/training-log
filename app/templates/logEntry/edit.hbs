@@ -1,0 +1,33 @@
+{{#view App.MainContainerView}}
+
+    <div class="row">
+        <div class="col-7">
+            <h3>{{#if isNew}}Create{{else}}Edit{{/if}} Log Entry</h3>
+
+            {{render "alert"}}
+
+            <form class="admin-form buff" id="edit_form" role="form" {{action "save" on="submit"}} enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Session type </label>
+
+                    {{view Ember.Select
+                        value=selectedSessionType
+                        content=sessionTypes.model
+                        optionValuePath="content.id"
+                        optionLabelPath="content.name"
+                        selectionBinding="selectedSessionType"
+                        prompt="Select a session type"
+                        class="form-control"
+                    }}
+
+                    <div id="session-type-template">
+                        {{outlet "sessionTypeChanged"}}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-5"></div>
+
+{{/view}}

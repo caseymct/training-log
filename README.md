@@ -54,7 +54,7 @@ inside-route
     - grade
     - comments
 
-outside-route
+outside-routsessioe
     - name
     - link
     - attempts

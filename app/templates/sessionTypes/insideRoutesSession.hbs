@@ -4,12 +4,11 @@
             <tr>
                 <th>Set #</th>
                 <th>Details</th>
-                <th>Delete</th>
+                <th>Edit</th>
             </tr>
         </thead>
         <tbody class="sortable">
-            {{#each routeSet in routeSets}}
-                {{log routeSet}}
+            {{#each routeSet in model}}
                 <tr>
                     <td>{{add _view.contentIndex 1}}</td>
                     <td>
@@ -18,7 +17,7 @@
                             <div>
                                 <label>Grade</label>
                                 <span>5.</span>
-                                {{input type="text" value=route.grade class="route-grade"}}
+                                {{type-ahead data=App.AllRouteGrades limit=20 name="grade" value=route.grade}}
                                 <label>Details</label>
 
                                 {{view Ember.Select
@@ -29,18 +28,25 @@
 
                                 <label>Comments</label>
                                 {{input type="text" value=route.comments class="route-comments"}}
+
+                                <button {{action "remove" route on="click"}} class="btn btn-delete btn-delete-route">x</button>
                             </div>
                         {{/each}}
                         </div>
                     </td>
-                    <td>del</td>
+                    <td>
+                        <button {{action "removeRouteFromSet" routeSet on="click"}} class="btn btn-delete">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                        <button {{action "addRouteToSet" routeSet on="click"}} class="btn btn-success">Add route</button>
+                    </td>
                 </tr>
             {{/each}}
         </tbody>
     </table>
 
     <div class="form-group">
-        {{input class="btn btn-success" type="submit" value="Add New Set"}}
-        <button class="btn" {{action "discard" on="click"}}>Reset</button>
+        <button class="btn btn-success" {{action "addSet" on="click"}}>Add set</button>
+        <button class="btn" {{action "reset" on="click"}}>Reset</button>
     </div>
 </div>

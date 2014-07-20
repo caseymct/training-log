@@ -9,14 +9,7 @@ App.LogEntryCreateRoute = Ember.Route.extend(
         actions: {
             willTransition: function () {
                 this.controllerFor("logEntryEdit").reset();
-            },
-            // changeTemplate: function (sessionType) {
-            //     this.render("sessionTypes/" + sessionType.get("templateName"), {
-            //         into: "logEntry/edit",
-            //         outlet: "sessionTypeChanged",
-            //         controller: "insideRouteSession"
-            //     });
-            // }
+            }
         },
 
         // Hooks

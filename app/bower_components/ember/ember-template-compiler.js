@@ -1,15 +1,16 @@
 (function() {
 var Ember = { assert: function() {}, FEATURES: { isEnabled: function() {} } };
-/*!
- * @overview  Ember - JavaScript Application Framework
- * @copyright Copyright 2011-2014 Tilde Inc. and contributors
- *            Portions Copyright 2006-2011 Strobe Inc.
- *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
- * @license   Licensed under MIT license
- *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   1.5.0
- */
+// ==========================================================================
+// Project:   Ember - JavaScript Application Framework
+// Copyright: Copyright 2011-2013 Tilde Inc. and contributors
+//            Portions Copyright 2006-2011 Strobe Inc.
+//            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
+// License:   Licensed under MIT license
+//            See https://raw.github.com/emberjs/ember.js/master/LICENSE
+// ==========================================================================
 
+
+ // Version: 1.2.0
 
 (function() {
 /**
@@ -24,19 +25,13 @@ var objectCreate = Object.create || function(parent) {
   return new F();
 };
 
-var Handlebars = (Ember.imports && Ember.imports.Handlebars) || (this && this.Handlebars);
+var Handlebars = this.Handlebars || (Ember.imports && Ember.imports.Handlebars);
 if (!Handlebars && typeof require === 'function') {
   Handlebars = require('handlebars');
 }
 
-Ember.assert("Ember Handlebars requires Handlebars version 1.0 or 1.1. Include " +
-             "a SCRIPT tag in the HTML HEAD linking to the Handlebars file " +
-             "before you link to Ember.", Handlebars);
-
-Ember.assert("Ember Handlebars requires Handlebars version 1.0 or 1.1, " +
-             "COMPILER_REVISION expected: 4, got: " +  Handlebars.COMPILER_REVISION +
-             " - Please note: Builds of master may have other COMPILER_REVISION values.",
-             Handlebars.COMPILER_REVISION === 4);
+Ember.assert("Ember Handlebars requires Handlebars version 1.0 or 1.1. Include a SCRIPT tag in the HTML HEAD linking to the Handlebars file before you link to Ember.", Handlebars);
+Ember.assert("Ember Handlebars requires Handlebars version 1.0 or 1.1, COMPILER_REVISION expected: 4, got: " +  Handlebars.COMPILER_REVISION + " - Please note: Builds of master may have other COMPILER_REVISION values.", Handlebars.COMPILER_REVISION === 4);
 
 /**
   Prepares the Handlebars templating library for use inside Ember's view
@@ -118,19 +113,20 @@ Ember.Handlebars.helper = function(name, value) {
 };
 
 /**
+  @private
+
   Returns a helper function that renders the provided ViewClass.
 
   Used internally by Ember.Handlebars.helper and other methods
   involving helper/component registration.
 
-  @private
-  @method makeViewHelper
+  @method helper
   @for Ember.Handlebars
   @param {Function} ViewClass view class constructor
 */
 Ember.Handlebars.makeViewHelper = function(ViewClass) {
   return function(options) {
-    Ember.assert("You can only pass attributes (such as name=value) not bare values to a helper for a View found in '" + ViewClass.toString() + "'", arguments.length < 2);
+    Ember.assert("You can only pass attributes (such as name=value) not bare values to a helper for a View", arguments.length < 2);
     return Ember.Handlebars.helpers.view.call(this, ViewClass, options);
   };
 };
@@ -180,11 +176,12 @@ Ember.Handlebars.JavaScriptCompiler.prototype.initializeBuffer = function() {
 };
 
 /**
+  @private
+
   Override the default buffer for Ember Handlebars. By default, Handlebars
   creates an empty String at the beginning of each invocation and appends to
   it. Ember's Handlebars overrides this to append to a single shared buffer.
 
-  @private
   @method appendToBuffer
   @param string {String}
 */
@@ -202,7 +199,7 @@ Ember.Handlebars.JavaScriptCompiler.prototype.appendToBuffer = function(string) 
 // instead, as expected.
 //
 // This can go away once the following is closed:
-// https://github.com/wycats/handlebars.js/issues/634
+// https://github.com/wycats/handlebars.js/issues/617
 
 var DOT_LOOKUP_REGEX = /helpers\.(.*?)\)/,
     BRACKET_STRING_LOOKUP_REGEX = /helpers\['(.*?)'/,
@@ -214,7 +211,7 @@ Ember.Handlebars.JavaScriptCompiler.stringifyLastBlockHelperMissingInvocation = 
       matches = INVOCATION_SPLITTING_REGEX.exec(helperInvocation);
 
   source[source.length - 1] = matches[1] + "'" + helperName + "'" + matches[3];
-};
+}
 var stringifyBlockHelperMissing = Ember.Handlebars.JavaScriptCompiler.stringifyLastBlockHelperMissingInvocation;
 
 var originalBlockValue = Ember.Handlebars.JavaScriptCompiler.prototype.blockValue;
@@ -229,18 +226,26 @@ Ember.Handlebars.JavaScriptCompiler.prototype.ambiguousBlockValue = function() {
   stringifyBlockHelperMissing(this.source);
 };
 
+var prefix = "ember" + (+new Date()), incr = 1;
+
 /**
+  @private
+
   Rewrite simple mustaches from `{{foo}}` to `{{bind "foo"}}`. This means that
   all simple mustaches in Ember's Handlebars will also set up an observer to
   keep the DOM up to date when the underlying property changes.
 
-  @private
   @method mustache
   @for Ember.Handlebars.Compiler
   @param mustache
 */
 Ember.Handlebars.Compiler.prototype.mustache = function(mustache) {
-  if (!(mustache.params.length || mustache.hash)) {
+  if (mustache.isHelper && mustache.id.string === 'control') {
+    mustache.hash = mustache.hash || new Handlebars.AST.HashNode([]);
+    mustache.hash.pairs.push(["controlID", new Handlebars.AST.StringNode(prefix + incr++)]);
+  } else if (mustache.params.length || mustache.hash) {
+    // no changes required
+  } else {
     var id = new Handlebars.AST.IdNode([{ part: '_triageMustache' }]);
 
     // Update the mustache node to include a hash value indicating whether the original node
@@ -272,7 +277,7 @@ Ember.Handlebars.precompile = function(string) {
     knownHelpers: {
       action: true,
       unbound: true,
-      'bind-attr': true,
+      bindAttr: true,
       template: true,
       view: true,
       _triageMustache: true

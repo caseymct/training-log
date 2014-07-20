@@ -13,6 +13,7 @@ App.LogEntryEditController = Ember.ObjectController.extend(
 
         selectedSessionType: null,
 
+
         sessionTypeChanged: function () {
             this.send("changeTemplate", this.get("selectedSessionType"));
         }.observes("selectedSessionType"),
@@ -33,6 +34,7 @@ App.LogEntryEditController = Ember.ObjectController.extend(
                 this.get("model").rollback();
             }
         },
+
         saveEntry: function () {
             // this.set("model.merchant", this.get("selectedMerchant"));
             // this.set("model.rewards_category", this.get("selectedRewardCategory"));

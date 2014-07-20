@@ -19,3 +19,4 @@ config.json
 *.pyc
 sqlite_database
 .env
+app/bower_components/*

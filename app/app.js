@@ -18,7 +18,8 @@ require("dependencies/scripts/bootstrap");
 require("dependencies/scripts/bootstrap-datepicker");
 require("dependencies/scripts/bootstrap-timepicker");
 require("dependencies/scripts/ZeroClipboard");
-require("dependencies/scripts/simplehelp");
+require("dependencies/scripts/typeahead");
+require("dependencies/scripts/ember-typeahead");
 require("dependencies/scripts/raven");
 require("dependencies/scripts/showdown");
 require("dependencies/compiled/templates");
@@ -37,6 +38,7 @@ require("app/models/sessionType");
 require("app/models/insideRoute");
 require("app/models/insideRoutesSet");
 require("app/models/insideRoutesSession");
+require("app/models/routeGrade");
 
 require("app/helpers/add");
 
